@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image,ImageTk
 import sqlite3
+from class_e import *
 # sign in widow
 
 
