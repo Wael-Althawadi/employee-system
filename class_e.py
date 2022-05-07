@@ -127,7 +127,6 @@ class Sabratha_u:
         Radiobutton(add_usr_,text = "male",variable = s__v,value = 1).place(x = 130,y = 128)
         Radiobutton(add_usr_,text = "female",variable = s__v,value = 2).place(x = 300,y = 128)
 
-        
 
         def go_add():
             
@@ -241,28 +240,51 @@ class Sabratha_u:
         Radiobutton(del_usr_,text = "male",variable = s__v2,value = 1).place(x = 130,y = 128)
         Radiobutton(del_usr_,text = "female",variable = s__v2,value = 2).place(x = 300,y = 128)
         
+        def s_u():
+            global result
+            result = []
+            if my_tree2 and en__1.get() != "" :
+                
+                for row in df_rows_2:
+                    if en__1.get() in row[0] :
+                        result.append(row)
+                        
+
+                for child in my_tree2.get_children():
+                    my_tree2.delete(child)
+                
+                for c in result:
+                    my_tree2.insert("","end",values = c)
+        
+        s_b = Button(del_usr_,text = "search",command = s_u)
+        s_b.grid(row = 0,column = 4)
         
         def del_go():
+            global selected_i
             
+                
             if my_tree2 != "" :
+                
                 wb = load_workbook(file_n)
                 ws = wb.active
                 for row in ws.iter_rows():
                     for cell in row:
-                        if en__1.get() in str(cell.value):
+                        if en__2.get() in str(cell.value):
                             ws.delete_rows(cell.row)
                 wb.save(file_n)
                     
                 en__1.delete(0,END)
                 en__2.delete(0,END)
-                x = my_tree2.selection()
                 
-                if x :
+                x = my_tree2.selection()
+
+                if x != "" :
                     for i in x:
-                        my_tree2.delete(x)
+                        my_tree2.delete(i)
                         messagebox.showinfo("message","succefuly deleted")
                 else:
                     messagebox.showerror("error","select user to delete")
+                    
             else:
                 messagebox.showerror("error","open file firist")
                 
@@ -271,23 +293,24 @@ class Sabratha_u:
         
         def srch_go():
             
-            if my_tree2 != "":
-                if en__1.get() == "" :
+            try:
+                
+                if my_tree2 != "":
+                    
                     x2 = my_tree2.selection()
                     items = my_tree2.item(x2)
-                                                                ########################################
-                    en__1.insert(0,str(items["values"][0]))
-                    en__2.insert(0,int(items["values"][1]))
-                elif en__1.get() != "":
-                    for child in my_tree2.get_children():
-                        if en__1.get() in my_tree2.item(child)["values"]:
-                            my_tree2.selection_set(child)
-                                
-                            en__1.delete(0,END)
-                            en__1.insert(0,str(child["values"][0]))
-                            en__2.insert(0,int(child["values"][1]))
-            
+                    
+                    if items != "":
+                        en__1.delete(0,END)
+                        
+                        en__1.insert(0,str(items["values"][0]))
+                        en__2.insert(0,int(items["values"][1]))
+                    else:
+                        messagebox.showerror("error","select user firist")
+                   
                 
+            except:
+                messagebox.showerror("error","open file firist")
         
                 
         add_go = Button(del_usr_,text = "Get info",bg = "#3498db",fg = "white",padx = 130,pady = 10,command = srch_go)
@@ -298,7 +321,8 @@ class Sabratha_u:
             global my_tree2
             global df_rows_2
             global file_n
-
+            global df2
+            
             file_types = (("excel files","*.xlsx"),("all files","*.*"))
             file_n = filedialog.askopenfilename(initialdir = "/home/",title = "title",filetypes = file_types)
 
@@ -371,26 +395,53 @@ class Sabratha_u:
         
         
         def search():
+            global searched
+            searched = []
             if my_tree3 and en_1_.get() != "" :
-                for child in my_tree3.get_children():
-                    if en_1_.get() in my_tree3.item(child)["values"]:
-                        my_tree3.selection_set(child)
+                
+                for row in df_rows_3:
+                    if en_1_.get() in row[0] :
+                        searched.append(row)
                         
-                        en_1_.insert(0,str(child["values"][0]))
-                        en_2_.insert(0,int(child["values"][1]))
-                    else:
-                        messagebox.showerror("error","user not found!")
+
+                for child in my_tree3.get_children():
+                    my_tree3.delete(child)
+                
+                for c in searched:
+                    my_tree3.insert("","end",values = c)
+            
+
             else:
                 messagebox.showerror("error","check fields ,or file not open")
+                
         
         search_go = Button(srch_usr,text = "USER SEARCH",bg = "#3498db",fg = "white",padx = 130,pady = 10,command = search)
         search_go.grid(row = 4 ,column = 1,pady = 5)
         
-        
+        def reset():
+            try:
+                
+            
+                for child in my_tree3.get_children():
+                    my_tree3.delete(child)
+
+                my_tree3["column"] = list(df3.columns)
+                my_tree3["show"] = "headings"
+
+                for col_ in df3.columns:
+                    my_tree3.heading(col_,text=col_)
+
+                for row_ in df_rows_3:
+                    my_tree3.insert("", "end",values= row_)
+            except:
+                messagebox.showerror("error","open file firist")
+            
         def opn_file3():
             global my_tree3
             global df_rows_3
             global file_n
+            global df3
+            global df_rows_3
 
             file_types = (("excel files","*.xlsx"),("all files","*.*"))
             file_n = filedialog.askopenfilename(initialdir = "/home/",title = "title",filetypes = file_types)
@@ -424,4 +475,5 @@ class Sabratha_u:
                 
         menu4 = Menu(root_srch)
         menu4.add_command(label = "open file",command = opn_file3)
+        menu4.add_command(label = "reset",command = reset)
         root_srch.config(menu = menu4)
